@@ -33,9 +33,6 @@ Thumbs.db
 .coverage
 htmlcov/
 
-# Migrations should be tracked in Git for deployment
-
-
 # Build
 build/
 dist/
