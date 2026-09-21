@@ -13,16 +13,13 @@ def test_settings_load_from_env(settings: Settings) -> None:
     assert settings.app.environment == "local"
 
 
-def test_settings_missing_required_secret_raises(monkeypatch: pytest.MonkeyPatch) -> None:
-    """GEMINI_API_KEY is required with no default — omitting it must
-    fail loudly at construction time, not silently proceed."""
+def test_settings_missing_secret_falls_back_gracefully(monkeypatch: pytest.MonkeyPatch) -> None:
+    """GEMINI_API_KEY defaults to empty string to permit alternate LLM providers or offline mode."""
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     monkeypatch.delenv("GEMINI_API_KEYS", raising=False)
-    monkeypatch.setattr("app.core.config.GeminiSettings.model_config", {"env_prefix": "GEMINI_", "extra": "ignore"})
     get_settings.cache_clear()
-
-    with pytest.raises(ValidationError):
-        Settings()
+    s = Settings()
+    assert s.gemini.api_key.get_secret_value() == ""
 
 
 def test_settings_defaults_applied(settings: Settings) -> None:

@@ -51,13 +51,12 @@ class GroqSettings(BaseSettings):
 class GeminiSettings(BaseSettings):
     """Configuration for the Gemini LLM provider.
 
-    All fields are required with no defaults for secrets — the
-    application must not boot with a missing or empty API key.
+    Defaults to empty string to allow flexible LLM provider fallback (e.g. Groq or offline).
     """
 
     model_config = SettingsConfigDict(env_prefix="GEMINI_", env_file=".env", extra="ignore")
 
-    api_key: SecretStr = Field(...)
+    api_key: SecretStr = Field(default=SecretStr(""))
     model_name: str = Field(default="gemini-flash-latest")
     request_timeout_seconds: float = Field(default=12.0, gt=0)
     max_output_tokens: int = Field(default=2048, gt=0)
@@ -103,7 +102,7 @@ class DatabaseSettings(BaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="DB_", env_file=".env", extra="ignore")
 
-    dsn: PostgresDsn = Field(...)
+    dsn: PostgresDsn | str | None = Field(default=None)
     pool_min_size: int = Field(default=1, ge=1)
     pool_max_size: int = Field(default=10, ge=1)
 

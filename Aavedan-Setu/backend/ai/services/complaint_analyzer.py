@@ -45,7 +45,9 @@ class ComplaintAnalyzer:
         if len(sys.argv) > 1 and sys.argv[1] == 'test':
             retriever_result = kr_result
         else:
-            ai_url = getattr(settings, "AI_SERVICE_URL", "http://localhost:8010")
+            ai_url = getattr(settings, "AI_SERVICE_URL", "http://localhost:8010") or "http://localhost:8010"
+            if not (ai_url.startswith("http://") or ai_url.startswith("https://")):
+                ai_url = f"http://{ai_url}"
             try:
                 payload = {
                     "text": preprocessed_text,
